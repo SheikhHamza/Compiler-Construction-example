@@ -10,7 +10,7 @@ void SelectionSort(int[] num, int length)
           {
                  if (num[j] <num[first])
                         first = j;
-                 j = j + 1
+                 j = j + 1;
           }
          temp = num[first]; //Swap smallest found with element in position i.
          num[first] = num[i];
