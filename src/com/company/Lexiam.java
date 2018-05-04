@@ -122,6 +122,36 @@ public class Lexiam
 		}
 		return null;
 	}
+	private String checkIntArr(String str)
+	{
+
+		if ((str.length() - (currentIndex + 5)) > 1)
+		{
+			if (str.substring(currentIndex, currentIndex + 5).equals("int[]") && !Character.isAlphabetic(str.charAt(currentIndex+5)))
+			{
+				currentIndex += 5;
+				TokenLex temp = new TokenLex("INT[]","^");
+				token_and_lexiams.add(temp);
+				return "(INT,^)";
+			}
+		}
+		return null;
+	}
+	private String checkCharArr(String str)
+	{
+		if ((str.length() - (currentIndex + 6)) > 1)
+		{
+			if (str.substring(currentIndex, currentIndex + 6).equals("char") && !Character.isAlphabetic(str.charAt(currentIndex+6)))
+			{
+				currentIndex += 6;
+				TokenLex temp = new TokenLex("CHAR[]","^");
+				token_and_lexiams.add(temp);
+				return "(CHAR[],^)";
+			}
+
+		}
+		return null;
+	}
 	private String checkChar(String str)
 	{
 		if ((str.length() - (currentIndex + 4)) > 1)
@@ -690,10 +720,17 @@ public class Lexiam
 			}else if ((outStr = checkElse(inputProgram)) != null)
 			{
 				lexiamsOutput = lexiamsOutput.concat(outStr +  "\n");
+			}else if ((outStr = checkIntArr(inputProgram)) != null)
+			{
+				lexiamsOutput = lexiamsOutput.concat(outStr +  "\n");
 			}else if ((outStr = checkInt(inputProgram)) != null)
 			{
 				lexiamsOutput = lexiamsOutput.concat(outStr +  "\n");
-			}else if ((outStr = checkChar(inputProgram)) != null)
+			}else if ((outStr = checkCharArr(inputProgram)) != null)
+			{
+				lexiamsOutput = lexiamsOutput.concat(outStr +  "\n");
+			}
+			else if ((outStr = checkChar(inputProgram)) != null)
 			{
 				lexiamsOutput = lexiamsOutput.concat(outStr +  "\n");
 			}else if ((outStr = check_E_OR_NE(inputProgram)) != null)

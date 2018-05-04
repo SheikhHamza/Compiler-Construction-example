@@ -2,6 +2,8 @@ package com.company;
 
 import jdk.nashorn.internal.ir.Assignment;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
+import java.io.*;
 import java.util.ArrayList;
 
 import static javafx.application.Platform.exit;
@@ -10,7 +12,9 @@ public class Parcer
 {
 	String look = new String();
 	ArrayList<TokenLex> tokens_and_lexiam = null;
+	ArrayList<TokenLex> identifiers = new ArrayList<TokenLex>();
 	int currentToken = -1;
+
 
 	public void setTokens_and_lexiam(ArrayList<TokenLex> tokens_and_lexiam)
 	{
@@ -83,33 +87,20 @@ public class Parcer
 		if(look.equals("INT"))
 		{
 			match("INT");
-			if(look.equals("["))
-			{
-				match("[");
-				if(look.equals("]"))
-				{
-					match("]");
-				}
-				else
-				{
-					ParserError("Clossing bracket missing");
-				}
-			}
+		}
+		else if(look.equals("INT[]"))
+		{
+			match("INT[]");
 		}
 		else if (look.equals("CHAR"))
 		{
 			match("CHAR");
-			match("[");
-			if(look.equals("]"))
-			{
-				match("]");
-			}
-			else
-			{
-				ParserError("Clossing bracket missing");
-			}
 		}
-		else {
+		else if (look.equals("CHAR[]"))
+		{
+			match("CHAR[]");
+		} else
+		{
 			ParserError("Undefined data type");
 		}
 	}
@@ -545,6 +536,29 @@ public class Parcer
 	void ID(){
 		if(look.equals("ID"))
 		{
+			int x = currentToken-1;
+			boolean check = true;
+			while(check)
+			{
+				if(x < 0)
+				{
+					ParserError("Datatype not defined");
+				}
+				if(tokens_and_lexiam.get(x).getToken().equals("INT")
+						||tokens_and_lexiam.get(x).getToken().equals("INT[]")
+						||tokens_and_lexiam.get(x).getToken().equals("CHAR")
+						||tokens_and_lexiam.get(x).getToken().equals("CHAR[]")
+						||tokens_and_lexiam.get(x).getToken().equals("VOID"))
+				{
+					identifiers.add(tokens_and_lexiam.get(x));
+					check = false;
+				}
+				else
+				{
+					x--;
+				}
+			}
+			identifiers.add(tokens_and_lexiam.get(currentToken));
 			match("ID");
 		}
 	}
@@ -560,15 +574,41 @@ public class Parcer
 		}
 	}
 	void ParserError(String str){
-
+			System.out.println(str);
+			System.exit(0);
 	}
 	String nextToken()
 	{
 		if(currentToken == (tokens_and_lexiam.size()-1))
 		{
+			writeIdentifiers();
 			System.exit(0);
 		}
 		currentToken++;
 		return tokens_and_lexiam.get(currentToken).getToken();
+	}
+
+	void writeIdentifiers(){
+		for(TokenLex x: identifiers)
+		{
+			System.out.println(x.getToken()+","+x.getLexiam());
+		}
+		// writing identifiers
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("parser-symboltable.txt"), "utf-8")))
+		{
+			for(int i = 0; i < identifiers.size()-1; i++)
+			{
+				writer.write("DATATYPE:"+ identifiers.get(i).getToken()  + " ,NAME: "+ identifiers.get(++i).getLexiam() +"\n" );
+			}
+		} catch (UnsupportedEncodingException e)
+		{
+			e.printStackTrace();
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

@@ -9,7 +9,8 @@ void SelectionSort(int[] num, int length)
           while (j <= i)	// locate smallest between positions 1 and i.
           {
                  if (num[j] <num[first])
-                        first = j;
+                        { first = j;
+}
                  j = j + 1;
           }
          temp = num[first]; //Swap smallest found with element in position i.

@@ -25,6 +25,7 @@ public class Main
 		Parcer parser = new Parcer();
 		parser.setTokens_and_lexiam(temp);
 		parser.start();
+
 	}
 
 }
